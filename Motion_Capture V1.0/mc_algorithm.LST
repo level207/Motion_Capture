@@ -1,0 +1,286 @@
+C51 COMPILER V9.00   MC_ALGORITHM                                                          04/14/2014 22:40:25 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MC_ALGORITHM
+OBJECT MODULE PLACED IN mc_algorithm.OBJ
+COMPILER INVOKED BY: D:\Program Files\Keil C\C51\BIN\C51.EXE mc_algorithm.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /* ËùÓĞËã·¨µÄÊµÏÖ */
+   2          #include <stdio.h>
+   3          #include <intrins.h>
+   4          #include <math.h>
+   5          #include "mc_common_define.h"
+   6          #include "mc_sensor.h"
+   7          #include "mc_algorithm.h"
+   8          
+   9          float q0 = 0, q1 = 0, q2 = 0, q3 = 0;
+  10          float exInt = 0, eyInt = 0, ezInt = 0;        // scaled integral error
+  11          
+  12          /*******************************************************************************
+  13          * Function Name  : init_quaternion
+  14          * Description    : Ëã³ö³õÊ¼»¯ËÄÔªÊıq0 q1 q2 q3. ³õÊ¼»¯Ö»ĞèÒª¼ÓËÙ¶È¼ÆºÍ´ÅÁ¦¼ÆµÄÖµ¾Í¿ÉÒÔÁË
+  15          * Input          : None
+  16          * Output         : None
+  17          * Return         : None
+  18          *******************************************************************************/
+  19          void init_quaternion(void)
+  20          { 
+  21   1              uchar data_write[6];
+  22   1          signed short int accel[3], mag[3];
+  23   1          float init_Yaw, init_Pitch, init_Roll;
+  24   1              float init_ax, init_ay, init_az, init_mx, init_my, init_mz;
+  25   1          int i = 0;
+  26   1      
+  27   1              multiple_read_smbus(0xA6, 0x32, data_write); //¶Á¼ÓËÙ¶È¼ÆµÄÖµ
+  28   1              accel[0]=(signed short int)((data_write[1]<<8) | data_write[0]);
+  29   1              accel[1]=(signed short int)((data_write[3]<<8) | data_write[2]);
+  30   1              accel[2]=(signed short int)((data_write[5]<<8) | data_write[4]);
+  31   1                          
+  32   1              //µ¥Î»×ª»¯³ÉÖØÁ¦¼ÓËÙ¶ÈµÄµ¥Î»g£ºm/s2
+  33   1              init_ax=(float)(accel[0] * 3.9 / 1000);    
+  34   1              init_ay=(float)(accel[1] * 3.9 / 1000);
+  35   1          init_az=(float)(accel[2] * 3.9 / 1000);
+  36   1              //printf("ax=%f,   ay=%f,   az=%f", init_ax, init_ay, init_az);
+  37   1      
+  38   1          //½øĞĞx yÖáµÄĞ£×¼£¬Î´¶ÔzÖá½øĞĞĞ£×¼£¬²Î¿¼MEMSenseµÄĞ£×¼·½·¨ 
+  39   1          multiple_read_smbus(0x3C, 0x03, data_write); //¶Áµç×ÓÂŞÅÌµÄÖµ
+  40   1              mag[0]=(signed short int)((data_write[0]<<8) | data_write[1]);
+  41   1          mag[1]=(signed short int)((data_write[2]<<8) | data_write[3]);
+  42   1          mag[2]=(signed short int)((data_write[4]<<8) | data_write[5]);
+  43   1          init_mx =(float)mag[0];                                             
+  44   1          init_my =(float)mag[1];
+  45   1          init_mz =(float)mag[2];
+  46   1      
+  47   1              //ÍÓÂİÒÇxÖáÎªÇ°½ø·½Ïò
+  48   1          init_Roll  = atan2(init_ay, init_az);
+  49   1          init_Pitch = -asin(init_ax);              //init_Pitch = asin(ax / 1);      
+  50   1          init_Yaw   = -atan2(init_mx*cos(init_Roll) + init_my*sin(init_Roll)*sin(init_Pitch) + init_mz*sin(init
+             -_Roll)*cos(init_Pitch),
+  51   1                              init_my*cos(init_Pitch) - init_mz*sin(init_Pitch));                       //atan2(
+             -mx, my);
+  52   1      
+  53   1          q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)
+C51 COMPILER V9.00   MC_ALGORITHM                                                          04/14/2014 22:40:25 PAGE 2   
+
+             -*sin(0.5*init_Yaw);  //w
+  54   1          q1 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - cos(0.5*init_Roll)*sin(0.5*init_Pitch)
+             -*sin(0.5*init_Yaw);  //x   ÈÆxÖáĞı×ªÊÇroll
+  55   1          q2 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*cos(0.5*init_Pitch)
+             -*sin(0.5*init_Yaw);  //y   ÈÆyÖáĞı×ªÊÇpitch
+  56   1          q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)
+             -*cos(0.5*init_Yaw);  //z       ÈÆzÖáĞı×ªÊÇYaw
+  57   1              
+  58   1              //printf("³õÊ¼»¯ËÄÔªÊı£ºYaw=%f, Pitch=%f, Roll=%f \n\r", init_Yaw*57.295780, init_Pitch*57.295780, init_R
+             -oll*57.295780);
+  59   1          //ÍÓÂİÒÇyÖáÎªÇ°½ø·½Ïò    
+  60   1              //init_Roll = -atan2(init_ax, init_az);    //Ëã³öµÄµ¥Î»ÊÇ»¡¶È£¬ÈçĞèÒª¹Û²ìÔòÓ¦³ËÒÔ57.3×ª»¯Îª½Ç¶È
+  61   1              //init_Pitch=  asin(init_ay);              //init_Pitch = asin(ay / 1);      
+  62   1              //init_Yaw  =  atan2(init_mx*cos(init_Roll) + init_my*sin(init_Roll)*sin(init_Pitch) + init_mz*sin(init_R
+             -oll)*cos(init_Pitch),
+  63   1              //                   init_my*cos(init_Pitch) - init_mz*sin(init_Pitch));//ÀàËÆÓÚatan2(my, mx)£¬ÆäÖĞµÄinit
+             -_RollºÍinit_PitchÊÇ»¡¶È
+  64   1              //if(init_Yaw < 0){init_Yaw = init_Yaw + 2*3.141593;}
+  65   1              //if(init_Yaw > 360){init_Yaw = init_Yaw - 2*3.141593;}                                     
+  66   1              //½«³õÊ¼»¯Å·À­½Ç×ª»»³É³õÊ¼»¯ËÄÔªÊı£¬×¢Òâsin(a)µÄÎ»ÖÃµÄ²»Í¬£¬¿ÉÒÔÈ·¶¨ÈÆxyzÖá×ª¶¯ÊÇPitch»¹ÊÇRoll»¹ÊÇYaw£¬°´
+             -ÕÕZXYË³ĞòĞı×ª,Qzyx=Qz*Qy*Qx£¬ÆäÖĞµÄinit_YawRollPtichÊÇ½Ç¶È        
+  67   1              //q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*
+             -sin(0.5*init_Yaw);  //w
+  68   1              //q1 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*cos(0.5*init_Pitch)*
+             -sin(0.5*init_Yaw);  //x   ÈÆxÖáĞı×ªÊÇpitch
+  69   1              //q2 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + cos(0.5*init_Roll)*sin(0.5*init_Pitch)*
+             -sin(0.5*init_Yaw);  //y   ÈÆyÖáĞı×ªÊÇroll
+  70   1              //q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)*
+             -cos(0.5*init_Yaw);  //z   ÈÆzÖáĞı×ªÊÇYaw    
+  71   1          
+  72   1              return;
+  73   1      }
+  74          
+  75          /*********************************************************************************************************
+             -******************************
+  76          * Function Name  : AHRSupdate
+  77          * Description    : accel gyro magµÄÈÚºÏËã·¨£¬Ô´×ÔS.O.H. Madgwick
+  78          * Input          : None
+  79          * Output         : None
+  80          * Return         : None
+  81          // q0 q1 q2 q3ĞèÒª³õÊ¼»¯²ÅÄÜ´øÈëµ½ÏÂÃæµÄ³ÌĞòÖĞ£¬²»ÄÜÖ±½ÓÊ¹ÓÃ1 0 0 0½øĞĞÏÂÃæµÄ¼ÆËã£¬Õû¸ö²½ÖèÎª£º
+  82          // 1.Ê×ÏÈĞ£×¼accle gyro mag£»
+  83          // 2.µ÷ÓÃinit_quaternion£¬¸ù¾İ1ÖĞaccleµÄxyzÖáÊı¾İ£¬²¢ÀûÓÃ¹«Ê½¼ÆËã³ö³õÊ¼»¯Å·À­½Ç£¬
+  84          //   ÆäÖĞACCEL_1G=9.81£¬µ¥Î»¶¼ÊÇm/s2£¬¶øinit_Yaw¿ÉÒÔÓÃ´ÅÁ¦¼Æ¼ÆËã³öÀ´£»
+  85          // 3.¸ù¾İ×Ô¼ºµÄ²ÉÑùÖÜÆÚ£¬À´µ÷ÕûhalfT£¬halfT=²ÉÑùÖÜÆÚ/2£¬²ÉÑùÖÜÆÚÎªÖ´ĞĞ1´ÎAHRSupdateËùÓÃµÄÊ±¼ä£»
+  86          // 4.½«2ÖĞ¼ÆËã³öµÄÅ·À­½Ç×ª»¯Îª³õÊ¼»¯µÄËÄÔªÊıq0 q1 q2 q3£¬ÈÚºÏ¼ÓËÙ¶È¼Æ£¬ÍÓÂİÒÇ£¬Ëã³ö¸üĞÂºóµÄÅ·À­½ÇpitchºÍro
+             -ll£¬È»ºóÊ¹ÓÃpitch rollºÍ´ÅÁ¦¼ÆµÄÊı¾İ½øĞĞ»¥²¹ÂË²¨ÈÚºÏµÃµ½Yaw£¬¼´¿ÉÊ¹ÓÃ£¬µ«ÊÇÅ·À­½ÇÓĞÆæµã£»
+  87          // 5.»òÖ±½ÓÊ¹ÓÃËÄÔªÊı£»
+  88          // 6.ÖØ¸´4£¬¼´¿É¸üĞÂ×ËÌ¬;
+  89          
+  90          //×ÜµÄÀ´Ëµ£¬ºËĞÄÊÇÍÓÂİÒÇ£¬¼ÓËÙ¶È¼ÆÓÃÀ´ĞŞÕı²¹³¥PitchºÍRoll£¬´ÅÁ¦¼ÆÓÃÀ´ĞŞÕı²¹³¥Yaw;
+  91          //ÒÔÏÂ³ÌĞòÖĞ£¬gx, gy, gzµ¥Î»Îª»¡¶È/s£¬ax, ay, azÎª¼ÓËÙ¶È¼ÆÊä³öµÄÔ­Ê¼16½øÖÆÊı¾İ, mx, my, mzÎª´ÅÁ¦¼ÆÊä³öµÄÔ­
+             -Ê¼16½øÖÆÊı¾İ£»
+  92          //Ç°½ø·½Ïò£ºmpu9150µÄ¼ÓËÙ¶È¼ÆºÍÍÓÂİÒÇµÄxÖáÎªÇ°½ø·½Ïò;
+  93          //ÒÔÏÂ³ÌĞò²ÉÓÃµÄ²Î¿¼·½ÏòÎª£ºmpu9150µÄ¼ÓËÙ¶È¼ÆºÍÍÓÂİÒÇËùÖ¸µÄxyz·½ÏòÎªÕı·½Ïò£»
+  94          
+  95          //ÔÚÁ¿³ÌÎªÕı¸º500¶È/sµÄÇ°ÌáÏÂ£¬ÍÓÂİÒÇµÄÁéÃô¶ÈÊÇ65.5LSB/¶È/s£¬ËùÒÔ°ÑÍÓÂİÒÇÊä³öµÄÊ®Áù½øÖÆÊı¾İ³ıÒÔ65.5¾ÍÊÇ½ÇË
+             -Ù¶È£¬µ¥Î»ÊÇ¡ã/s£¬
+  96          //È»ºóÔÙ³ıÒÔ57.3¾Í±ä³É»¡¶ÈÖÆ;(1»¡¶È=180/pi=57.3¶È)
+  97          
+  98          //Å·À­½Çµ¥Î»Îª»¡¶Èradian£¬³ËÒÔ57.3ÒÔºó×ª»»Îª½Ç¶È,0<yaw<360, -90<pitch<+90, -180<roll<180
+  99          **********************************************************************************************************
+C51 COMPILER V9.00   MC_ALGORITHM                                                          04/14/2014 22:40:25 PAGE 3   
+
+             -*****************************/
+ 100          void AHRSupdate(float gx, float gy, float gz, float ax, float  ay, float az, float mx, float my, float mz)
+             - 
+ 101          {
+ 102   1          float norm;
+ 103   1          float hx, hy, hz, bz, bx; //, by
+ 104   1          float vx, vy, vz, wx, wy, wz;
+ 105   1          float ex, ey, ez;
+ 106   1         //xdata float Pitch, Roll, Yaw;
+ 107   1      
+ 108   1      /*·½±ãÖ®ºóµÄ³ÌĞòÊ¹ÓÃ£¬¼õÉÙ¼ÆËãÊ±¼ä*/
+ 109   1         //auxiliary variables to reduce number of repeated operations£¬
+ 110   1         float q0q0 = q0*q0;
+ 111   1         float q0q1 = q0*q1;
+ 112   1         float q0q2 = q0*q2;
+ 113   1         float q0q3 = q0*q3;
+ 114   1         float q1q1 = q1*q1;
+ 115   1         float q1q2 = q1*q2;
+ 116   1         float q1q3 = q1*q3;
+ 117   1         float q2q2 = q2*q2;   
+ 118   1         float q2q3 = q2*q3;
+ 119   1         float q3q3 = q3*q3;
+ 120   1                
+ 121   1      /*¹éÒ»»¯²âÁ¿Öµ£¬¼ÓËÙ¶È¼ÆºÍ´ÅÁ¦¼ÆµÄµ¥Î»ÊÇÊ²Ã´¶¼ÎŞËùÎ½£¬ÒòÎªËüÃÇÔÚ´Ë±»×÷ÁË¹éÒ»»¯´¦Àí*/        
+ 122   1         //normalise the measurements
+ 123   1         norm = invSqrt(ax*ax + ay*ay + az*az);       
+ 124   1         ax = ax * norm;
+ 125   1         ay = ay * norm;
+ 126   1         az = az * norm;
+ 127   1         norm = invSqrt(mx*mx + my*my + mz*mz);          
+ 128   1         mx = mx * norm;
+ 129   1         my = my * norm;
+ 130   1         mz = mz * norm;         
+ 131   1              
+ 132   1      /*´Ó»úÌå×ø±êÏµµÄµç×ÓÂŞÅÌ²âµ½µÄÊ¸Á¿×ª³ÉµØÀí×ø±êÏµÏÂµÄ´Å³¡Ê¸Á¿hxyz£¨²âÁ¿Öµ£©£¬ÏÂÃæÕâ¸öÊÇ´Ó·ÉĞĞÆ÷×ø±êÏµµ½ÊÀ½ç
+             -×ø±êÏµµÄ×ª»»¹«Ê½*/
+ 133   1         //compute reference direction of flux
+ 134   1         hx = 2*mx*(0.5 - q2q2 - q3q3) + 2*my*(q1q2 - q0q3) + 2*mz*(q1q3 + q0q2);
+ 135   1         hy = 2*mx*(q1q2 + q0q3) + 2*my*(0.5 - q1q1 - q3q3) + 2*mz*(q2q3 - q0q1);
+ 136   1         hz = 2*mx*(q1q3 - q0q2) + 2*my*(q2q3 + q0q1) + 2*mz*(0.5 - q1q1 - q2q2);
+ 137   1      
+ 138   1      /*¼ÆËãµØÀí×ø±êÏµÏÂµÄ´Å³¡Ê¸Á¿bxyz£¨²Î¿¼Öµ£©¡£
+ 139   1      ÒòÎªµØÀíµØ´ÅË®Æ½¼Ğ½Ç£¬ÎÒÃÇÒÑÖªÊÇ0¶È£¨Å×È¥´ÅÆ«½ÇµÄÒòËØ£¬¹Ì¶¨Ïò±±£©£¬ÎÒ¶¨ÒåbyÖ¸ÏòÕı±±£¬ËùÒÔby=Ä³Öµ£¬bx=0
+ 140   1      µ«µØÀí²Î¿¼µØ´ÅÊ¸Á¿ÔÚ´¹Ö±ÃæÉÏÒ²ÓĞ·ÖÁ¿bz£¬µØÇòÉÏÃ¿¸öµØ·½¶¼ÊÇ²»Ò»ÑùµÄ¡£
+ 141   1      ÎÒÃÇÎŞ·¨µÃÖª£¬Ò²¾ÍÎŞ·¨ÓÃÀ´ÈÚºÏ£¨ÓĞ¸üÊÊºÏ×ö´¹Ö±·½ÏòĞŞÕıÈÚºÏµÄ¼ÓËÙ¶È¼Æ£©£¬ËùÒÔÖ±½Ó´Ó²âÁ¿ÖµhzÉÏ¸´ÖÆ¹ıÀ´£¬bz=h
+             -z¡£
+ 142   1      ´Å³¡Ë®Æ½·ÖÁ¿£¬²Î¿¼ÖµºÍ²âÁ¿ÖµµÄ´óĞ¡Ó¦¸ÃÊÇÒ»ÖÂµÄ(bx*bx) + (by*by)) = ((hx*hx) + (hy*hy))¡£
+ 143   1      ÒòÎªbx=0£¬ËùÒÔ¾Í¼ò»¯³É(by*by)  = ((hx*hx) + (hy*hy))¡£¿ÉËã³öby¡£ÕâÀïĞŞ¸ÄbyºÍbxÖ¸Ïò¿ÉÒÔ¶¨ÒåÄÄ¸öÖáÖ¸ÏòÕı±±*/
+ 144   1       
+ 145   1         //ÎÒÃÇµÄºÍÔ­×÷ÕßÓĞÇø±ğ£¬¶¨ÒåµÄbxÎªÇ°½ø·½ÏòÎªÕı±±
+ 146   1         bx = sqrt((hx*hx) + (hy*hy));
+ 147   1         bz = hz;        
+ 148   1          
+ 149   1         // estimated direction of gravity and flux (v and w)£¬ÏÂÃæÕâ¸öÊÇ´ÓÊÀ½ç×ø±êÏµµ½·ÉĞĞÆ÷×ø±êÏµµÄ×ª»»¹«Ê½(×ª
+             -ÖÃ¾ØÕó)
+ 150   1         vx = 2*(q1q3 - q0q2);
+ 151   1         vy = 2*(q0q1 + q2q3);
+ 152   1         vz = q0q0 - q1q1 - q2q2 + q3q3;
+ 153   1      
+ 154   1      /*ÎÒÃÇ°ÑµØÀí×ø±êÏµÉÏµÄ´Å³¡Ê¸Á¿bxyz£¬×ªµ½»úÌåÉÏÀ´wxyz¡£
+ 155   1      ÒòÎªbx=0£¬ËùÒÔËùÓĞÉæ¼°µ½bxµÄ²¿·Ö¶¼±»Ê¡ÂÔÁË¡£Í¬Àíby=0£¬ËùÒÔËùÓĞÉæ¼°µ½byµÄ²¿·ÖÒ²¿ÉÒÔ±»Ê¡ÂÔ£¬Õâ¸ù¾İ×Ô¼º¶¨ÒåÄÇ
+             -¸öÖáÖ¸±±ÓĞ¹Ø¡£
+C51 COMPILER V9.00   MC_ALGORITHM                                                          04/14/2014 22:40:25 PAGE 4   
+
+ 156   1      ÀàËÆÉÏÃæÖØÁ¦vxyzµÄÍÆËã£¬ÒòÎªÖØÁ¦gµÄaz=1£¬ax=ay=0£¬ËùÒÔÉÏÃæÉæ¼°µ½gxgyµÄ²¿·ÖÒ²±»Ê¡ÂÔÁË
+ 157   1      Äã¿ÉÒÔ¿´¿´Á½¸ö¹«Ê½£ºwxyzµÄ¹«Ê½£¬°Ñby»»³Éay£¨0£©£¬°Ñbz»»³Éaz£¨1£©£¬¾Í±ä³ÉÁËvxyzµÄ¹«Ê½ÁË£¨ÆäÖĞq0q0+q1q1+q2q2
+             -+q3q3=1£©¡£*/
+ 158   1      
+ 159   1               //ÎÒÃÇ¶¨ÒåµÄbxÖ¸ÏòÕı±±
+ 160   1         wx = 2*bx*(0.5 - q2q2 - q3q3) + 2*bz*(q1q3 - q0q2);
+ 161   1         wy = 2*bx*(q1q2 - q0q3) + 2*bz*(q0q1 + q2q3);
+ 162   1         wz = 2*bx*(q0q2 + q1q3) + 2*bz*(0.5 - q1q1 - q2q2);
+ 163   1      
+ 164   1         //wx = 2*by*(q1q2 + q0q3) + 2*bz*(q1q3 - q0q2);
+ 165   1         //wy = 2*by*(0.5 - q1q1 - q3q3) + 2*bz*(q0q1 + q2q3);
+ 166   1         //wz = 2*by*(q2q3 - q0q1) + 2*bz*(0.5 - q1q1 - q2q2);
+ 167   1               
+ 168   1      //ÏÖÔÚ°Ñ¼ÓËÙ¶ÈµÄ²âÁ¿Ê¸Á¿ºÍ²Î¿¼Ê¸Á¿×ö²æ»ı£¬°Ñ´Å³¡µÄ²âÁ¿Ê¸Á¿ºÍ²Î¿¼Ê¸Á¿Ò²×ö²æ»ı¡£¶¼ÄÃÀ´À´ĞŞÕıÍÓÂİ¡£
+ 169   1         // error is sum of cross product between reference direction of fields and direction measured by sensor
+             -s
+ 170   1         ex = (ay*vz - az*vy) + (my*wz - mz*wy);
+ 171   1         ey = (az*vx - ax*vz) + (mz*wx - mx*wz);
+ 172   1         ez = (ax*vy - ay*vx) + (mx*wy - my*wx);
+ 173   1         
+ 174   1         //¸üĞÂĞŞÕıÏµÊı,²¢¼ÆËã³ö¸üĞÂºóµÄÍÓÂİÒÇÖµ
+ 175   1         if(ex != 0.0f && ey != 0.0f && ez != 0.0f)      //ºÜ¹Ø¼üµÄÒ»¾ä»°£¬Ô­Ëã·¨Ã»ÓĞ
+ 176   1         {
+ 177   2            // integral error scaled integral gain
+ 178   2            exInt = exInt + ex*Ki * halfT;                       //³ËÒÔ²ÉÑùÖÜÆÚµÄÒ»°ë
+ 179   2            eyInt = eyInt + ey*Ki * halfT;
+ 180   2            ezInt = ezInt + ez*Ki * halfT;
+ 181   2            // adjusted gyroscope measurements
+ 182   2            gx = gx + Kp*ex + exInt;
+ 183   2            gy = gy + Kp*ey + eyInt;
+ 184   2            gz = gz + Kp*ez + ezInt;
+ 185   2         }         
+ 186   1      
+ 187   1         // integrate quaternion rate and normalise£¬ËÄÔªÊı¸üĞÂËã·¨
+ 188   1         q0 = q0 + (-q1*gx - q2*gy - q3*gz)*halfT;
+ 189   1         q1 = q1 + (q0*gx + q2*gz - q3*gy)*halfT;
+ 190   1         q2 = q2 + (q0*gy - q1*gz + q3*gx)*halfT;
+ 191   1         q3 = q3 + (q0*gz + q1*gy - q2*gx)*halfT;  
+ 192   1            
+ 193   1         // normalise quaternion
+ 194   1         norm = invSqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+ 195   1         q0 = q0 * norm;       //w
+ 196   1         q1 = q1 * norm;       //x
+ 197   1         q2 = q2 * norm;       //y
+ 198   1         q3 = q3 * norm;       //z
+ 199   1      
+ 200   1         //ÓÉËÄÔªÊı¸üĞÂÅ·À­½Ç£¬×¢ÒâÕâÊÇ¸øD3D×ø±êÏµÓÃ£¬ËùÒÔºÍÆäËû×ø±êÏµÊÇ²»Í¬µÄ¹«Ê½£º
+ 201   1         //Roll  = arctan2(2(wz + xy), 1 - 2(xx + zz))*57.3;
+ 202   1         //Pitch = arcsin(2(wx - yz))*57.3;
+ 203   1         //Yaw   = arctan2(2(wy + xz), 1- 2(xx + yy))*57.3;
+ 204   1         //1=q0*q0+q1*q1+q2*q2+q3*q3;
+ 205   1         
+ 206   1          Roll  = atan2(2 * (q0 * q3 + q1 *q2), 1 - 2 *(q1 * q1 + q3 * q3)) * 57.3; //roll ¹ö¶¯½Ç£¬ÈÆyÖá×ª¶¯
+ 207   1          Pitch = asin(2 * (q0 * q1 - q2 *q3)) * 57.3; // pitch ¸©Ñö½Ç£¬ÈÆxÖá×ª¶¯
+ 208   1          Yaw   = atan2(2 * (q0 * q2 + q1 * q3),  1 - 2 * (q1 * q1 + q2 *q2)) * 57.3; //yaw Æ«º½½Ç£¬ÈÆzÖá×ª¶¯
+ 209   1                
+ 210   1              //printf("Yaw=%f, Pitch=%f, Roll=%f\n", Yaw, Pitch, Roll);
+ 211   1              printf("Yaw=%f, Pitch=%f, Roll=%f\n", Yaw*57.3, Pitch*57.3, Roll*57.3);
+ 212   1      
+ 213   1         return;
+ 214   1      }
+ 215          
+C51 COMPILER V9.00   MC_ALGORITHM                                                          04/14/2014 22:40:25 PAGE 5   
+
+ 216          
+ 217          /*******************************************************************************
+ 218          ¿ìËÙ¼ÆËã 1/Sqrt(x)£¬Ô´×ÔÀ×Éñ3µÄÒ»¶Î´úÂë£¬ÉñÆæµÄ0x5f3759df£¡±ÈÕı³£µÄ´úÂë¿ì4±¶    
+ 219          *******************************************************************************/
+ 220          float invSqrt(float x) 
+ 221          {
+ 222   1              float halfx = 0.5f * x;
+ 223   1              float y = x;
+ 224   1              long i = *(long*)&y;
+ 225   1              i = 0x5f3759df - (i>>1);
+ 226   1              y = *(float*)&i;
+ 227   1              y = y * (1.5f - (halfx * y * y));
+ 228   1              return y;
+ 229   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   7265    ----
+   CONSTANT SIZE    =     27    ----
+   XDATA SIZE       =     28     208
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

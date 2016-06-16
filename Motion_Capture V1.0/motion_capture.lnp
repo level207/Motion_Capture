@@ -1,0 +1,6 @@
+"STARTUP.obj",
+"mc_init_8051.obj",
+"mc_main.obj",
+"mc_sensor.obj" 
+TO "motion_capture" 
+RAMSIZE(256) 

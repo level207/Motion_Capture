@@ -1,0 +1,30 @@
+﻿Build started 2014/4/27 20:56:54.
+     1>Project "C:\Users\nobcaup\Desktop\动作捕捉项目\airplean model--serial\AirPlean\AirPlean.vcxproj" on node 2 (rebuild target(s)).
+     1>_PrepareForClean:
+         Deleting file "Debug\AirPlean.lastbuildstate".
+       InitializeBuildStatus:
+         Creating "Debug\AirPlean.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         d:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt StateControlUseQua.cpp
+         StateControlUseQua.cpp
+       ManifestResourceCompile:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\AirPlean.exe.embed.manifest.res" Debug\AirPlean_manifest.rc 
+       Link:
+         d:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Debug\AirPlean.exe" /INCREMENTAL /NOLOGO d3dx9d.lib d3d9.lib winmm.lib dxerr.lib dxguid.lib d3dx10d.lib comctl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\AirPlean.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"Debug\AirPlean.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Debug\AirPlean.lib" /MACHINE:X86 Debug\AirPlean.exe.embed.manifest.res
+         Debug\StateControlUseQua.obj
+       Manifest:
+         Deleting file "Debug\AirPlean.exe.embed.manifest".
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\AirPlean.exe.embed.manifest" /manifest Debug\AirPlean.exe.intermediate.manifest
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /nologo /fo"Debug\AirPlean.exe.embed.manifest.res" Debug\AirPlean_manifest.rc 
+       LinkEmbedManifest:
+         d:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Debug\AirPlean.exe" /INCREMENTAL /NOLOGO d3dx9d.lib d3d9.lib winmm.lib dxerr.lib dxguid.lib d3dx10d.lib comctl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\AirPlean.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"Debug\AirPlean.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"Debug\AirPlean.lib" /MACHINE:X86 Debug\AirPlean.exe.embed.manifest.res
+         Debug\StateControlUseQua.obj
+         AirPlean.vcxproj -> C:\Users\nobcaup\Desktop\动作捕捉项目\airplean model--serial\AirPlean\Debug\AirPlean.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\AirPlean.unsuccessfulbuild".
+         Touching "Debug\AirPlean.lastbuildstate".
+     1>Done Building Project "C:\Users\nobcaup\Desktop\动作捕捉项目\airplean model--serial\AirPlean\AirPlean.vcxproj" (rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.25

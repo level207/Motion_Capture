@@ -1,0 +1,488 @@
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MC_INIT_8051
+OBJECT MODULE PLACED IN mc_init_8051.OBJ
+COMPILER INVOKED BY: D:\Program Files\Keil C\C51\BIN\C51.EXE mc_init_8051.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /* 初始化所有和8051有关的硬件资源，包括I/O配置，看门狗，晶振，串口，IIC等 */
+   2          
+   3          #include <stdio.h>
+   4          #include <intrins.h>
+   5          #include <c8051f340.h>
+   6          #include "mc_init_8051.h"
+   7          #include "mc_algorithm.h"
+   8          
+   9          sbit      SCL=P0^0;      //IIC时钟引脚定义
+  10          sbit      SDA=P0^1;      //IIC数据引脚定义
+  11          float Pitch = 0, Roll = 0, Yaw = 0;
+  12          //sfr WDTCN    = 0xFF;
+  13          
+  14          /*********************************************
+  15          * name:                 mc_init_watchdog
+  16          * description:  初始化配置看门狗
+  17          * input:                NONE
+  18          * return:               NONE
+  19          *********************************************/
+  20          void mc_init_watchdog(void)
+  21          {
+  22   1              PCA0MD &= ~0x40; /* 关闭看门狗 */
+  23   1              return;
+  24   1      }
+  25          
+  26          /*********************************************
+  27          * name:                 mc_init_sysclk
+  28          * description:  初始化配置系统时钟
+  29          * input:                NONE
+  30          * return:               NONE
+  31          *********************************************/
+  32          void mc_init_sysclk(void)
+  33          {
+  34   1          OSCICN |= 0x03; /* SYSCLK为内部高频振荡器输出（不分频）,SYSCLK == 12MHz */ 
+  35   1      //      RSTSRC = 0x04; /* 检测到时钟丢失条件时触发复位 */  
+  36   1                           
+  37   1              return;
+  38   1      }
+  39          
+  40          /*********************************************
+  41          * name:                 mc_init_port
+  42          * description:  初始化配置GPIO
+  43          * input:                NONE
+  44          * return:               NONE
+  45          *********************************************/
+  46          void mc_init_port(void)
+  47          {
+  48   1              /* uart0 prot init */
+  49   1              P0MDOUT |= 0x10; /* P0.4为推挽输出 */
+  50   1          XBR0 |= 0x01; /* 端口I/O交叉开关寄存器0,UART TX0, RX0 连到端口引脚 P0.4 和 P0.5 */                    
+             -                      
+  51   1          XBR1 |= 0x40; /* 端口I/O交叉开关寄存器1,交叉开关使能 */
+  52   1      //      P0MDIN |= 0x30; /* P0.4和P0.5配置为数字I/O,默认就是如此 */
+  53   1      
+  54   1              /* SMBus port init */
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 2   
+
+  55   1      //      XBR0 |= 0x04; /* 交叉开关，SMBus I/O 连接到端口引脚 */
+  56   1      //  XBR1 |= 0x40; /* 端口I/O交叉开关寄存器1,交叉开关使能 */
+  57   1      //      P0MDIN |= 0x03; /* P0.0和P0.1配置为数字I/O,默认就是如此 */
+  58   1      //  P0MDOUT &= ~0x03; /* P0.0和P0.1配置为漏极开路,默认就是如此 */ 
+  59   1      
+  60   1              /* P2.2 led灯 init */
+  61   1      //      P2MDOUT |= 0x04;
+  62   1                         
+  63   1              return;
+  64   1      }
+  65          
+  66          /*********************************************
+  67          * name:                 mc_init_uart0
+  68          * description:  初始化配置uart0（初始化timer1）
+  69          * input:                NONE
+  70          * return:               NONE
+  71          *********************************************/
+  72          void mc_init_uart0(void)
+  73          {
+  74   1              /* uart0的波特率又定时器1提供 */
+  75   1                
+  76   1              SCON0 |= 0x10; /* UART0工作方式为0（波特率可编程的8位UART），UART0接收允许 */ 
+  77   1      //      CKCON = 0x01; /* 定时器1的分频位，设置为系统时钟/4分频 */
+  78   1      
+  79   1         if (SYSCLK/BAUDRATE/2/256 < 1) {
+  80   2            TH1 = -(SYSCLK/BAUDRATE/2);
+  81   2            CKCON &= ~0x0B;                  // T1M = 1; SCA1:0 = xx
+  82   2            CKCON |=  0x08;
+  83   2         } else if (SYSCLK/BAUDRATE/2/256 < 4) {
+  84   2            TH1 = -(SYSCLK/BAUDRATE/2/4);
+  85   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 01
+  86   2            CKCON |=  0x01;
+  87   2         } else if (SYSCLK/BAUDRATE/2/256 < 12) {
+  88   2            TH1 = -(SYSCLK/BAUDRATE/2/12);
+  89   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 00
+  90   2         } else {
+  91   2            TH1 = -(SYSCLK/BAUDRATE/2/48);
+  92   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 10
+  93   2            CKCON |=  0x02;
+  94   2         }
+  95   1         TL1 = TH1;
+  96   1      
+  97   1              /* UART0的波特率又定时器1工作在8位自动重载方式产生 */
+  98   1              TMOD &= ~0xf0;  /* 定时器1方式选择为8位自动重载方式 */                        
+  99   1              TMOD = 0x20;    /* 定时器1方式选择为8位自动重载方式 */ 
+ 100   1              TR1 = 1;                /* 启动定时器1 TR1为寄存器TCON中的第6位*/
+ 101   1          TI0 = 1;        /* Indicate TX0 ready */    
+ 102   1              //IP |= 0x10;   /* 置定时器1中断为高优先级 */
+ 103   1              //ES0 = 1;              /* 定时器1中断允许 */
+ 104   1      
+ 105   1              return;
+ 106   1      }
+ 107          
+ 108          /*********************************************
+ 109          * name:                 mc_init_timer2
+ 110          * description:  16位自动重载，用于每30ms向串口发送四元数
+ 111          * input:                NONE
+ 112          * return:               NONE
+ 113          *********************************************/
+ 114          void mc_init_timer2()
+ 115          {
+ 116   1              TMR2CN &= ~0x01;  /* T2XCLK = 0; 选择定时器 2 外部时钟为系统时钟/12 (SYSCLK = 12Mhz) */
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 3   
+
+ 117   1       
+ 118   1              /* T2ML = 0; 定时器2 低字节使用TMR2CN中的T2XCLK 位定义的时钟 */
+ 119   1              /* T2MH = 0; 定时器2 高字节使用TMR2CN中的T2XCLK 位定义的时钟 */
+ 120   1              CKCON &= ~0x30;
+ 121   1      
+ 122   1              /* TMR2RL = 55535; 10000 = (2^16 - X)*(12Mhz/12)  X = 55535 */
+ 123   1              TMR2RLH = 55535/256; /* 定时器T2的重载寄存器高八位赋初值 */
+ 124   1              TMR2RLL = 55535%256; /* 定时器T2的重载寄存器低八位赋初值 */
+ 125   1              TMR2H   = TMR2RLH;
+ 126   1              TMR2L   = TMR2RLL;
+ 127   1      
+ 128   1              TMR2CN |= 0x04;   /* 使能timer2 为16位自动重载定时器 */
+ 129   1          ET2 = 1;             /* 允许timer2中断 */
+ 130   1              
+ 131   1              return;
+ 132   1      }
+ 133          
+ 134          /*********************************************
+ 135          * name:                 mc_init_timer3
+ 136          * description:  16位自动重载，用于每1ms从IIC总线读取传感器的数据
+ 137          * input:                NONE
+ 138          * return:               NONE
+ 139          *********************************************/
+ 140          void mc_init_timer3()
+ 141          {
+ 142   1              TMR3CN &= ~0x01; /* T3XCLK = 0; 选择定时器 3 外部时钟为系统时钟/12 (SYSCLK = 12Mhz) */
+ 143   1      
+ 144   1              /* T3ML = 0; 定时器3 低字节使用TMR3CN中的T3XCLK 位定义的时钟 */
+ 145   1              /* T3MH = 0; 定时器3 高字节使用TMR3CN中的T3XCLK 位定义的时钟 */
+ 146   1              CKCON &= ~0xC0;
+ 147   1      
+ 148   1              /* TMR3RL = 64535; 10000 = (2^16 - X)*(12Mhz/12)  X = 64535 */
+ 149   1              TMR3RLH = 64535/256; /* 定时器T3的重载寄存器高八位赋初值 */
+ 150   1              TMR3RLL = 64535%256; /* 定时器T3的重载寄存器低八位赋初值 */
+ 151   1              TMR3H   = TMR3RLH;
+ 152   1              TMR3L   = TMR3RLL;
+ 153   1      
+ 154   1              TMR3CN |= 0x04;   /* 使能timer3 为16位自动重载定时器 */
+ 155   1          
+ 156   1              //EIE1 |= 0x80; /* ET3 = 1; 允许timer3中断 */
+ 157   1              
+ 158   1              return;
+ 159   1      }
+ 160          
+ 161          /*********************************************
+ 162          * name:                 mc_uart0_interrupt
+ 163          * description:  uart0中断处理函数，每10ms发送一次欧拉角,发送至少需要4ms
+ 164          * input:                NONE
+ 165          * return:               NONE
+ 166          *********************************************/
+ 167          void mc_uart0_ISR (void) interrupt 5
+ 168          {
+ 169   1              uchar i = 0;
+ 170   1              uchar count = 0;
+ 171   1              uchar send[12] = {0};   /* 用于转换float型四元数为ascii，顺序是q0,q1,q2,q3 */
+ 172   1      
+ 173   1              float_to_ascii(Yaw, send);                      /* Yaw --> send[0]--send[3] */
+ 174   1              float_to_ascii(Pitch, &(send[4]));      /* Pitch --> send[4]--send[7] */
+ 175   1              float_to_ascii(Roll, &(send[8]));       /* Roll --> send[8]--send[11] */
+ 176   1      
+ 177   1              //printf("q0=%f, q1=%f, q2=%f, q3=%f\n", q0, q1, q2, q3);       
+ 178   1              SBUF0 = 0xAA;  /* 两字节帧头 */
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 4   
+
+ 179   1              delay_us(250);
+ 180   1              SBUF0 = 0x55;
+ 181   1              delay_us(250);
+ 182   1              for (i = 0; i < 12; i++)
+ 183   1              {
+ 184   2                      SBUF0 = send[i];
+ 185   2                      count++;
+ 186   2                      delay_us(250);
+ 187   2              }
+ 188   1              SBUF0 = count;  /* 校验位，有效数据位的长度 0x0C*/
+ 189   1              delay_us(250);
+ 190   1              //printf("\n");
+ 191   1      
+ 192   1              TF2H = 0;  /* 重启中断 */
+ 193   1      
+ 194   1         return;
+ 195   1      }
+ 196          
+ 197          /*********************************************
+ 198          * name:                 mc_i2c_interrupt
+ 199          * description:  i2c中断处理函数，每隔1ms读一次传感器数据
+ 200          * input:                NONE
+ 201          * return:               NONE
+ 202          *********************************************/
+ 203          void mc_i2c_interrupt (void) interrupt 6
+ 204          {
+ 205   1         return;
+ 206   1      }
+ 207          
+ 208          /*********************************************
+ 209          * name:                 delay_5us
+ 210          * description:  5us延时
+ 211          * input:                NONE
+ 212          * return:               NONE
+ 213          *********************************************/
+ 214          void delay_5us(void)
+ 215          {
+ 216   1          _nop_();_nop_();_nop_();_nop_();
+ 217   1          _nop_();_nop_();_nop_();_nop_();
+ 218   1              _nop_();_nop_();_nop_();_nop_();
+ 219   1      
+ 220   1              /*
+ 221   1          _nop_();_nop_();_nop_();_nop_();
+ 222   1          _nop_();_nop_();_nop_();_nop_();
+ 223   1              _nop_();_nop_();_nop_();_nop_();
+ 224   1          _nop_();_nop_();_nop_();_nop_();
+ 225   1          _nop_();_nop_();_nop_();_nop_();
+ 226   1              _nop_();_nop_();_nop_();_nop_();
+ 227   1              */
+ 228   1      
+ 229   1              return;
+ 230   1      }
+ 231          
+ 232          /*********************************************
+ 233          * name:                 delay_5ms
+ 234          * description:  5ms延时
+ 235          * input:                NONE
+ 236          * return:               NONE
+ 237          *********************************************/
+ 238          void delay_5ms(void)
+ 239          {
+ 240   1          unsigned short n = 1698;
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 5   
+
+ 241   1      
+ 242   1          while (n--);
+ 243   1      
+ 244   1              return;
+ 245   1      }
+ 246          
+ 247          /*********************************************
+ 248          * name:                 delay_ms
+ 249          * description:  5us 的倍数
+ 250          * input:                需要延时的us数，必须是5的倍数
+ 251          * return:               NONE
+ 252          *********************************************/
+ 253          void delay_us(uchar n)
+ 254          {
+ 255   1              uchar i = 0;
+ 256   1              for (i = 0; i < (n / 5); i++)
+ 257   1              {
+ 258   2                      delay_5us();
+ 259   2              }
+ 260   1      
+ 261   1              return;
+ 262   1      }
+ 263          
+ 264          /*********************************************
+ 265          * name:                 delay_ms
+ 266          * description:  5ms 的倍数
+ 267          * input:                需要延时的ms数，必须是5的倍数
+ 268          * return:               NONE
+ 269          *********************************************/
+ 270          void delay_ms(uchar n)
+ 271          {
+ 272   1              uchar i = 0;
+ 273   1              for (i = 0; i < (n / 5); i++)
+ 274   1              {
+ 275   2                      delay_5ms();
+ 276   2              }
+ 277   1      
+ 278   1              return;
+ 279   1      }
+ 280          
+ 281          /**************************************
+ 282          起始信号
+ 283          **************************************/
+ 284          void mc_smbus_start()
+ 285          {
+ 286   1          SDA = 1;                    //拉高数据线
+ 287   1          SCL = 1;                    //拉高时钟线
+ 288   1          delay_5us();                 //延时
+ 289   1          SDA = 0;                    //产生下降沿
+ 290   1          delay_5us();                 //延时
+ 291   1          SCL = 0;                    //拉低时钟线
+ 292   1      }
+ 293          
+ 294          /**************************************
+ 295          停止信号
+ 296          **************************************/
+ 297          void mc_smbus_stop()
+ 298          {
+ 299   1          SDA = 0;                    //拉低数据线
+ 300   1          SCL = 1;                    //拉高时钟线
+ 301   1          delay_5us();                 //延时
+ 302   1          SDA = 1;                    //产生上升沿
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 6   
+
+ 303   1          delay_5us();                 //延时
+ 304   1      }
+ 305          
+ 306          /**************************************
+ 307          发送应答信号
+ 308          入口参数:ack (0:ACK 1:NAK)
+ 309          **************************************/
+ 310          void mc_smbus_sendack(bit ack)
+ 311          {
+ 312   1          SDA = ack;                  //写应答信号
+ 313   1          SCL = 1;                    //拉高时钟线
+ 314   1          delay_5us();                 //延时
+ 315   1          SCL = 0;                    //拉低时钟线
+ 316   1          delay_5us();                 //延时
+ 317   1      }
+ 318          
+ 319          /**************************************
+ 320          接收应答信号
+ 321          **************************************/
+ 322          bit mc_smbus_recvack()
+ 323          {
+ 324   1          SCL = 1;                    //拉高时钟线
+ 325   1          delay_5us();                 //延时
+ 326   1          CY = SDA;                   //读应答信号
+ 327   1          SCL = 0;                    //拉低时钟线
+ 328   1          delay_5us();                 //延时
+ 329   1      
+ 330   1          return CY;
+ 331   1      }
+ 332          
+ 333          /**************************************
+ 334          向IIC总线发送一个字节数据
+ 335          **************************************/
+ 336          void mc_smbus_sendbyte(BYTE dat)
+ 337          {
+ 338   1          BYTE i;
+ 339   1      
+ 340   1          for (i=0; i<8; i++)         //8位计数器
+ 341   1          {
+ 342   2              dat <<= 1;              //移出数据的最高位
+ 343   2              SDA = CY;               //送数据口
+ 344   2              SCL = 1;                //拉高时钟线
+ 345   2              delay_5us();             //延时
+ 346   2              SCL = 0;                //拉低时钟线
+ 347   2              delay_5us();             //延时
+ 348   2          }
+ 349   1          mc_smbus_recvack();
+ 350   1      }
+ 351          
+ 352          /**************************************
+ 353          从IIC总线接收一个字节数据
+ 354          **************************************/
+ 355          BYTE mc_smbus_recvbyte()
+ 356          {
+ 357   1          BYTE i;
+ 358   1          BYTE dat = 0;
+ 359   1      
+ 360   1          SDA = 1;                    //使能内部上拉,准备读取数据,
+ 361   1          for (i=0; i<8; i++)         //8位计数器
+ 362   1          {
+ 363   2              dat <<= 1;
+ 364   2              SCL = 1;                //拉高时钟线
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 7   
+
+ 365   2              delay_5us();             //延时
+ 366   2              dat |= SDA;             //读数据               
+ 367   2              SCL = 0;                //拉低时钟线
+ 368   2              delay_5us();             //延时
+ 369   2          }
+ 370   1          return dat;
+ 371   1      }
+ 372          
+ 373          //******单字节写入*******************************************
+ 374          
+ 375          void single_write_smbus(uchar SlaveAddress, uchar REG_Address, uchar REG_data)
+ 376          {
+ 377   1          mc_smbus_start();                           //起始信号
+ 378   1          mc_smbus_sendbyte(SlaveAddress + WRITE);//发送设备地址+写信号
+ 379   1          mc_smbus_sendbyte(REG_Address);             //内部寄存器地址，请参考中文pdf22页 
+ 380   1          mc_smbus_sendbyte(REG_data);                //内部寄存器数据，请参考中文pdf22页 
+ 381   1          mc_smbus_stop();                            //发送停止信号
+ 382   1      }
+ 383          
+ 384          #if 0
+              //********单字节读取*****************************************
+              uchar single_read_smbus(uchar SlaveAddress, uchar REG_Address)
+              {  uchar REG_data;
+                  mc_smbus_start();                          //起始信号
+                  mc_smbus_sendbyte(SlaveAddress + WRITE);   //发送设备地址+写信号
+                  mc_smbus_sendbyte(REG_Address);            //发送存储单元地址，从0开始      
+                  mc_smbus_start();                          //起始信号
+                  mc_smbus_sendbyte(SlaveAddress + READ);    //发送设备地址+读信号
+                  REG_data=mc_smbus_recvbyte();              //读出寄存器数据
+                      mc_smbus_sendack(1);   
+                      mc_smbus_stop();                           //停止信号
+                  return REG_data; 
+              }
+              #endif
+ 399          //*********************************************************
+ 400          //
+ 401          //连续读出传感器内部加速度数据，ADXL345地址范围0x32~0x37
+ 402          //
+ 403          //*********************************************************
+ 404          void multiple_read_smbus(uchar SlaveAddress, uchar REG_Address, uchar *buf)
+ 405          {   
+ 406   1              uchar i;
+ 407   1          mc_smbus_start();                          //起始信号
+ 408   1          mc_smbus_sendbyte(SlaveAddress + WRITE);   //发送设备地址+写信号
+ 409   1          mc_smbus_sendbyte(REG_Address);            //发送存储单元地址，从REG_Address开始    
+ 410   1          mc_smbus_start();                          //起始信号
+ 411   1          mc_smbus_sendbyte(SlaveAddress + READ);    //发送设备地址+读信号
+ 412   1               for (i=0; i<6; i++)                       //连续读取6个地址数据，存储中BUF
+ 413   1          {
+ 414   2              buf[i] = mc_smbus_recvbyte();          //BUF[0]存储REG_Address地址中的数据
+ 415   2              if (i == 5)
+ 416   2              {
+ 417   3                 mc_smbus_sendack(1);                //最后一个数据需要回NOACK
+ 418   3              }
+ 419   2              else
+ 420   2              {
+ 421   3                mc_smbus_sendack(0);                //回应ACK
+ 422   3             }
+ 423   2         }
+ 424   1          mc_smbus_stop();                          //停止信号
+ 425   1          delay_ms(15);
+ 426   1      }
+C51 COMPILER V9.00   MC_INIT_8051                                                          04/14/2014 23:39:57 PAGE 8   
+
+ 427          
+ 428          /*********************************************
+ 429          * name:                 float_to_ascii
+ 430          * description:  分别取出每一位数，用于串口输出，串口输出是ASCII形式
+ 431          * input:                NONE
+ 432          * return:               NONE
+ 433          *********************************************/
+ 434          void float_to_ascii(float input, uchar *s)
+ 435          {
+ 436   1               uchar *p;
+ 437   1      
+ 438   1               p = (uchar *)&input;
+ 439   1      
+ 440   1          *s = *p;
+ 441   1      
+ 442   1          *(s + 1) = *(p + 1);
+ 443   1      
+ 444   1          *(s + 2) = *(p + 2);
+ 445   1      
+ 446   1          *(s + 3) = *(p + 3);
+ 447   1      
+ 448   1              return;
+ 449   1      }
+ 450          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    740    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =     12      27
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

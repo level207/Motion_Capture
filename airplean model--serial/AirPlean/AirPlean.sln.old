@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AirPlean", "AirPlean.vcproj", "{C3568632-E53E-43D7-958B-FACF4478B4F0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C3568632-E53E-43D7-958B-FACF4478B4F0}.Debug.ActiveCfg = Debug|Win32
+		{C3568632-E53E-43D7-958B-FACF4478B4F0}.Debug.Build.0 = Debug|Win32
+		{C3568632-E53E-43D7-958B-FACF4478B4F0}.Release.ActiveCfg = Release|Win32
+		{C3568632-E53E-43D7-958B-FACF4478B4F0}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

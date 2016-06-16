@@ -1,0 +1,807 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/14/2014  23:39:58  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\PROGRAM FILES\KEIL C\C51\BIN\BL51.EXE STARTUP.obj, mc_init_8051.obj, mc_main.obj, mc_sensor.obj TO motion_capture RAM
+>> SIZE (256)
+
+
+MEMORY MODEL: LARGE WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  mc_init_8051.obj (MC_INIT_8051)
+  mc_main.obj (MC_MAIN)
+  mc_sensor.obj (MC_SENSOR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPMUL)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPDIV)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FCAST)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (PRINTF)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPGETOPN)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPROUND)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPCONVERT)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FPADD)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51FPL.LIB (?C?FTNPWR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C_INIT)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?COPY)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?CLDPTR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?CLDOPTR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?CSTPTR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?CSTOPTR)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?LNEG)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?LSTXDATA)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?PLDIXDATA)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?PSTXDATA)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (?C?CCASE)
+  D:\PROGRAM FILES\KEIL C\C51\LIB\C51L.LIB (PUTCHAR)
+
+
+LINK MAP OF MODULE:  motion_capture (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0005H     UNIT         _DATA_GROUP_
+                    000DH     0013H                  *** GAP ***
+            BIT     0020H.0   0001H.1   UNIT         _BIT_GROUP_
+                    0021H.1   0000H.7                *** GAP ***
+            IDATA   0022H     0001H     UNIT         ?STACK
+
+            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
+            XDATA   0000H     0080H     UNIT         _XDATA_GROUP_
+            XDATA   0080H     0012H     UNIT         ?XD?MC_MAIN
+            XDATA   0092H     000CH     UNIT         ?XD?MC_INIT_8051
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0027H     UNIT         ?CO?MC_MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 2
+
+
+            CODE    002AH     0001H     UNIT         ?PR?MC_I2C_INTERRUPT?MC_INIT_8051
+            CODE    002BH     0003H     ABSOLUTE     
+            CODE    002EH     0004H     UNIT         ?PR?MC_INIT_WATCHDOG?MC_INIT_8051
+                    0032H     0001H                  *** GAP ***
+            CODE    0033H     0003H     ABSOLUTE     
+            CODE    0036H     06A8H     UNIT         ?C?LIB_CODE
+            CODE    06DEH     0483H     UNIT         ?PR?PRINTF?PRINTF
+            CODE    0B61H     0275H     UNIT         ?PR?MAIN?MC_MAIN
+            CODE    0DD6H     00C8H     UNIT         ?PR?MC_UART0_ISR?MC_INIT_8051
+            CODE    0E9EH     00ADH     UNIT         ?PR?_FLOAT_TO_ASCII?MC_INIT_8051
+            CODE    0F4BH     008CH     UNIT         ?C_C51STARTUP
+            CODE    0FD7H     004CH     UNIT         ?PR?_MULTIPLE_READ_SMBUS?MC_INIT_8051
+            CODE    1023H     0040H     UNIT         ?PR?MC_INIT_ADXL345?MC_SENSOR
+            CODE    1063H     002EH     UNIT         ?PR?MC_INIT_ITG3205?MC_SENSOR
+            CODE    1091H     002BH     UNIT         ?C_INITSEG
+            CODE    10BCH     0027H     UNIT         ?PR?PUTCHAR?PUTCHAR
+            CODE    10E3H     0022H     UNIT         ?PR?_MC_SMBUS_SENDBYTE?MC_INIT_8051
+            CODE    1105H     001FH     UNIT         ?PR?MC_SMBUS_RECVBYTE?MC_INIT_8051
+            CODE    1124H     001AH     UNIT         ?PR?MC_INIT_UART0?MC_INIT_8051
+            CODE    113EH     0018H     UNIT         ?PR?MC_INIT_TIMER2?MC_INIT_8051
+            CODE    1156H     0016H     UNIT         ?PR?MC_INIT_TIMER3?MC_INIT_8051
+            CODE    116CH     0016H     UNIT         ?PR?_DELAY_MS?MC_INIT_8051
+            CODE    1182H     0014H     UNIT         ?PR?_DELAY_US?MC_INIT_8051
+            CODE    1196H     0013H     UNIT         ?PR?MC_INIT_HMC5883L?MC_SENSOR
+            CODE    11A9H     000FH     UNIT         ?PR?DELAY_5MS?MC_INIT_8051
+            CODE    11B8H     000FH     UNIT         ?PR?MC_SMBUS_START?MC_INIT_8051
+            CODE    11C7H     000EH     UNIT         ?PR?MC_SMBUS_SENDACK?MC_INIT_8051
+            CODE    11D5H     000DH     UNIT         ?PR?DELAY_5US?MC_INIT_8051
+            CODE    11E2H     000DH     UNIT         ?PR?MC_SMBUS_RECVACK?MC_INIT_8051
+            CODE    11EFH     000CH     UNIT         ?PR?MC_SMBUS_STOP?MC_INIT_8051
+            CODE    11FBH     000CH     UNIT         ?CO?MC_INIT_8051
+            CODE    1207H     000BH     UNIT         ?PR?_SINGLE_WRITE_SMBUS?MC_INIT_8051
+            CODE    1212H     000AH     UNIT         ?PR?MC_INIT_PORT?MC_INIT_8051
+            CODE    121CH     000AH     UNIT         ?PR?MC_INIT_SENSOR?MC_SENSOR
+            CODE    1226H     0004H     UNIT         ?PR?MC_INIT_SYSCLK?MC_INIT_8051
+
+
+
+OVERLAY MAP OF MODULE:   motion_capture (?C_STARTUP)
+
+
+SEGMENT                                          BIT_GROUP          DATA_GROUP          XDATA_GROUP
+  +--> CALLED SEGMENT                         START    LENGTH     START    LENGTH     START    LENGTH
+-----------------------------------------------------------------------------------------------------
+?C_C51STARTUP                                 -----    -----      -----    -----      -----    -----
+  +--> ?PR?MAIN?MC_MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MC_MAIN                              -----    -----      -----    -----      0000H    0038H
+  +--> ?CO?MC_MAIN
+  +--> ?PR?MC_INIT_WATCHDOG?MC_INIT_8051
+  +--> ?PR?MC_INIT_SYSCLK?MC_INIT_8051
+  +--> ?PR?MC_INIT_PORT?MC_INIT_8051
+  +--> ?PR?MC_INIT_UART0?MC_INIT_8051
+  +--> ?PR?_DELAY_MS?MC_INIT_8051
+  +--> ?PR?MC_INIT_TIMER2?MC_INIT_8051
+  +--> ?PR?MC_INIT_SENSOR?MC_SENSOR
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 3
+
+
+  +--> ?PR?_MULTIPLE_READ_SMBUS?MC_INIT_8051
+  +--> ?PR?PRINTF?PRINTF
+
+?PR?_DELAY_MS?MC_INIT_8051                    -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5MS?MC_INIT_8051
+
+?PR?MC_INIT_SENSOR?MC_SENSOR                  -----    -----      -----    -----      -----    -----
+  +--> ?PR?MC_INIT_ADXL345?MC_SENSOR
+  +--> ?PR?MC_INIT_ITG3205?MC_SENSOR
+  +--> ?PR?MC_INIT_HMC5883L?MC_SENSOR
+
+?PR?MC_INIT_ADXL345?MC_SENSOR                 -----    -----      -----    -----      -----    -----
+  +--> ?PR?_SINGLE_WRITE_SMBUS?MC_INIT_8051
+
+?PR?_SINGLE_WRITE_SMBUS?MC_INIT_8051          -----    -----      -----    -----      -----    -----
+  +--> ?PR?_MC_SMBUS_SENDBYTE?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_STOP?MC_INIT_8051
+
+?PR?_MC_SMBUS_SENDBYTE?MC_INIT_8051           -----    -----      -----    -----      -----    -----
+  +--> ?PR?MC_SMBUS_START?MC_INIT_8051
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_RECVACK?MC_INIT_8051
+
+?PR?MC_SMBUS_START?MC_INIT_8051               -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+?PR?MC_SMBUS_RECVACK?MC_INIT_8051             -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+?PR?MC_SMBUS_STOP?MC_INIT_8051                -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+?PR?MC_INIT_ITG3205?MC_SENSOR                 -----    -----      -----    -----      -----    -----
+  +--> ?PR?_SINGLE_WRITE_SMBUS?MC_INIT_8051
+
+?PR?MC_INIT_HMC5883L?MC_SENSOR                -----    -----      -----    -----      -----    -----
+  +--> ?PR?_SINGLE_WRITE_SMBUS?MC_INIT_8051
+
+?PR?_MULTIPLE_READ_SMBUS?MC_INIT_8051         -----    -----      -----    -----      0038H    0003H
+  +--> ?PR?_MC_SMBUS_SENDBYTE?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_START?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_RECVBYTE?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_SENDACK?MC_INIT_8051
+  +--> ?PR?MC_SMBUS_STOP?MC_INIT_8051
+  +--> ?PR?_DELAY_MS?MC_INIT_8051
+
+?PR?MC_SMBUS_RECVBYTE?MC_INIT_8051            -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+?PR?MC_SMBUS_SENDACK?MC_INIT_8051             0020H.0  0000H.1    -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+?PR?PRINTF?PRINTF                             0020H.0  0001H.1    0008H    0005H      0038H    0030H
+  +--> ?PR?PUTCHAR?PUTCHAR
+
+*** NEW ROOT ***************************************************
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 4
+
+
+?PR?MC_UART0_ISR?MC_INIT_8051                 -----    -----      -----    -----      0068H    000EH
+  +--> ?CO?MC_INIT_8051
+  +--> ?PR?_FLOAT_TO_ASCII?MC_INIT_8051
+  +--> ?PR?_DELAY_US?MC_INIT_8051
+
+?PR?_FLOAT_TO_ASCII?MC_INIT_8051              -----    -----      -----    -----      0076H    000AH
+
+?PR?_DELAY_US?MC_INIT_8051                    -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_5US?MC_INIT_8051
+
+
+
+SYMBOL TABLE OF MODULE:  motion_capture (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C_STARTUP
+  C:0F4BH         SEGMENT       ?C_C51STARTUP
+  I:0022H         SEGMENT       ?STACK
+  C:0000H         PUBLIC        ?C_STARTUP
+  D:00E0H         SYMBOL        ACC
+  D:00F0H         SYMBOL        B
+  D:0083H         SYMBOL        DPH
+  D:0082H         SYMBOL        DPL
+  N:0000H         SYMBOL        IBPSTACK
+  N:0100H         SYMBOL        IBPSTACKTOP
+  N:0080H         SYMBOL        IDATALEN
+  C:0F4EH         SYMBOL        IDATALOOP
+  N:0000H         SYMBOL        PBPSTACK
+  N:0100H         SYMBOL        PBPSTACKTOP
+  N:0000H         SYMBOL        PDATALEN
+  N:0000H         SYMBOL        PDATASTART
+  N:0000H         SYMBOL        PPAGE
+  N:0000H         SYMBOL        PPAGEENABLE
+  D:00A0H         SYMBOL        PPAGE_SFR
+  D:0081H         SYMBOL        SP
+  C:0F4BH         SYMBOL        STARTUP1
+  N:0000H         SYMBOL        XBPSTACK
+  N:0000H         SYMBOL        XBPSTACKTOP
+  N:0000H         SYMBOL        XDATALEN
+  N:0000H         SYMBOL        XDATASTART
+  C:0000H         LINE#         126
+  C:0F4BH         LINE#         133
+  C:0F4DH         LINE#         134
+  C:0F4EH         LINE#         135
+  C:0F4FH         LINE#         136
+  C:0F51H         LINE#         185
+  C:0F54H         LINE#         196
+  -------         ENDMOD        ?C_STARTUP
+
+  -------         MODULE        MC_INIT_8051
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0FD7H         PUBLIC        _multiple_read_smbus
+  D:0080H         PUBLIC        P0
+  C:002AH         PUBLIC        mc_i2c_interrupt
+  C:11EFH         PUBLIC        mc_smbus_stop
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 5
+
+
+  C:11A9H         PUBLIC        delay_5ms
+  D:00A4H         PUBLIC        P0MDOUT
+  D:00CBH         PUBLIC        TMR2RLH
+  D:0093H         PUBLIC        TMR3RLH
+  C:1212H         PUBLIC        mc_init_port
+  C:11D5H         PUBLIC        delay_5us
+  D:00CAH         PUBLIC        TMR2RLL
+  D:0092H         PUBLIC        TMR3RLL
+  B:00C8H.7       PUBLIC        TF2H
+  D:00D9H         PUBLIC        PCA0MD
+  X:0092H         PUBLIC        Roll
+  B:00D0H.7       PUBLIC        CY
+  C:11C7H         PUBLIC        mc_smbus_sendack
+  D:00E1H         PUBLIC        XBR0
+  D:00E2H         PUBLIC        XBR1
+  C:113EH         PUBLIC        mc_init_timer2
+  C:002EH         PUBLIC        mc_init_watchdog
+  C:1156H         PUBLIC        mc_init_timer3
+  C:1207H         PUBLIC        _single_write_smbus
+  C:10EBH         PUBLIC        _mc_smbus_sendbyte
+  C:11E2H         PUBLIC        mc_smbus_recvack
+  C:1105H         PUBLIC        mc_smbus_recvbyte
+  X:0096H         PUBLIC        Yaw
+  D:0089H         PUBLIC        TMOD
+  C:1124H         PUBLIC        mc_init_uart0
+  D:00C8H         PUBLIC        TMR2CN
+  D:0091H         PUBLIC        TMR3CN
+  D:00B2H         PUBLIC        OSCICN
+  C:11FBH         SYMBOL        _?ix1000
+  C:0EABH         PUBLIC        _float_to_ascii
+  B:00A8H.5       PUBLIC        ET2
+  B:0098H.1       PUBLIC        TI0
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  C:116CH         PUBLIC        _delay_ms
+  B:0088H.6       PUBLIC        TR1
+  B:0080H.1       PUBLIC        SDA
+  C:1182H         PUBLIC        _delay_us
+  D:0099H         PUBLIC        SBUF0
+  B:0080H.0       PUBLIC        SCL
+  D:0098H         PUBLIC        SCON0
+  C:1226H         PUBLIC        mc_init_sysclk
+  D:00CDH         PUBLIC        TMR2H
+  C:0DD6H         PUBLIC        mc_uart0_ISR
+  D:0095H         PUBLIC        TMR3H
+  D:008EH         PUBLIC        CKCON
+  C:11B8H         PUBLIC        mc_smbus_start
+  D:00CCH         PUBLIC        TMR2L
+  D:0094H         PUBLIC        TMR3L
+  X:009AH         PUBLIC        Pitch
+  -------         PROC          MC_INIT_WATCHDOG
+  C:002EH         LINE#         20
+  C:002EH         LINE#         21
+  C:002EH         LINE#         22
+  C:0031H         LINE#         24
+  -------         ENDPROC       MC_INIT_WATCHDOG
+  -------         PROC          MC_INIT_SYSCLK
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 6
+
+
+  C:1226H         LINE#         32
+  C:1226H         LINE#         33
+  C:1226H         LINE#         34
+  C:1229H         LINE#         38
+  -------         ENDPROC       MC_INIT_SYSCLK
+  -------         PROC          MC_INIT_PORT
+  C:1212H         LINE#         46
+  C:1212H         LINE#         47
+  C:1212H         LINE#         49
+  C:1215H         LINE#         50
+  C:1218H         LINE#         51
+  C:121BH         LINE#         64
+  -------         ENDPROC       MC_INIT_PORT
+  -------         PROC          MC_INIT_UART0
+  C:1124H         LINE#         72
+  C:1124H         LINE#         73
+  C:1124H         LINE#         76
+  C:1127H         LINE#         79
+  C:1127H         LINE#         80
+  C:112AH         LINE#         81
+  C:112DH         LINE#         82
+  C:1130H         LINE#         83
+  C:1130H         LINE#         84
+  C:1130H         LINE#         85
+  C:1130H         LINE#         86
+  C:1130H         LINE#         87
+  C:1130H         LINE#         88
+  C:1130H         LINE#         89
+  C:1130H         LINE#         90
+  C:1130H         LINE#         91
+  C:1130H         LINE#         92
+  C:1130H         LINE#         93
+  C:1130H         LINE#         94
+  C:1130H         LINE#         95
+  C:1133H         LINE#         98
+  C:1136H         LINE#         99
+  C:1139H         LINE#         100
+  C:113BH         LINE#         101
+  C:113DH         LINE#         106
+  -------         ENDPROC       MC_INIT_UART0
+  -------         PROC          MC_INIT_TIMER2
+  C:113EH         LINE#         114
+  C:113EH         LINE#         115
+  C:113EH         LINE#         116
+  C:1141H         LINE#         120
+  C:1144H         LINE#         123
+  C:1147H         LINE#         124
+  C:114AH         LINE#         125
+  C:114DH         LINE#         126
+  C:1150H         LINE#         128
+  C:1153H         LINE#         129
+  C:1155H         LINE#         132
+  -------         ENDPROC       MC_INIT_TIMER2
+  -------         PROC          MC_INIT_TIMER3
+  C:1156H         LINE#         140
+  C:1156H         LINE#         141
+  C:1156H         LINE#         142
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 7
+
+
+  C:1159H         LINE#         146
+  C:115CH         LINE#         149
+  C:115FH         LINE#         150
+  C:1162H         LINE#         151
+  C:1165H         LINE#         152
+  C:1168H         LINE#         154
+  C:116BH         LINE#         159
+  -------         ENDPROC       MC_INIT_TIMER3
+  -------         PROC          MC_UART0_ISR
+  -------         DO            
+  X:0068H         SYMBOL        i
+  X:0069H         SYMBOL        count
+  X:006AH         SYMBOL        send
+  -------         ENDDO         
+  C:0DD6H         LINE#         167
+  C:0DF3H         LINE#         169
+  C:0DF8H         LINE#         170
+  C:0DFAH         LINE#         171
+  C:0E0CH         LINE#         173
+  C:0E16H         LINE#         174
+  C:0E20H         LINE#         175
+  C:0E37H         LINE#         178
+  C:0E3AH         LINE#         179
+  C:0E3FH         LINE#         180
+  C:0E42H         LINE#         181
+  C:0E47H         LINE#         182
+  C:0E56H         LINE#         183
+  C:0E56H         LINE#         184
+  C:0E63H         LINE#         185
+  C:0E69H         LINE#         186
+  C:0E6EH         LINE#         187
+  C:0E76H         LINE#         188
+  C:0E7CH         LINE#         189
+  C:0E81H         LINE#         192
+  C:0E83H         LINE#         195
+  -------         ENDPROC       MC_UART0_ISR
+  -------         PROC          MC_I2C_INTERRUPT
+  C:002AH         LINE#         203
+  C:002AH         LINE#         206
+  -------         ENDPROC       MC_I2C_INTERRUPT
+  -------         PROC          DELAY_5US
+  C:11D5H         LINE#         214
+  C:11D5H         LINE#         215
+  C:11D5H         LINE#         216
+  C:11D9H         LINE#         217
+  C:11DDH         LINE#         218
+  C:11E1H         LINE#         230
+  -------         ENDPROC       DELAY_5US
+  -------         PROC          DELAY_5MS
+  -------         DO            
+  D:0006H         SYMBOL        n
+  -------         ENDDO         
+  C:11A9H         LINE#         238
+  C:11A9H         LINE#         239
+  C:11A9H         LINE#         240
+  C:11ADH         LINE#         242
+  C:11B7H         LINE#         245
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 8
+
+
+  -------         ENDPROC       DELAY_5MS
+  -------         PROC          _DELAY_US
+  D:0007H         SYMBOL        n
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:1182H         LINE#         253
+  C:1182H         LINE#         254
+  C:1182H         LINE#         255
+  C:1184H         LINE#         256
+  C:118FH         LINE#         257
+  C:118FH         LINE#         258
+  C:1192H         LINE#         259
+  C:1195H         LINE#         262
+  -------         ENDPROC       _DELAY_US
+  -------         PROC          _DELAY_MS
+  D:0005H         SYMBOL        n
+  -------         DO            
+  D:0003H         SYMBOL        i
+  -------         ENDDO         
+  C:116CH         LINE#         270
+  C:116EH         LINE#         271
+  C:116EH         LINE#         272
+  C:1170H         LINE#         273
+  C:117BH         LINE#         274
+  C:117BH         LINE#         275
+  C:117EH         LINE#         276
+  C:1181H         LINE#         279
+  -------         ENDPROC       _DELAY_MS
+  -------         PROC          MC_SMBUS_START
+  C:11B8H         LINE#         284
+  C:11B8H         LINE#         285
+  C:11B8H         LINE#         286
+  C:11BAH         LINE#         287
+  C:11BCH         LINE#         288
+  C:11BFH         LINE#         289
+  C:11C1H         LINE#         290
+  C:11C4H         LINE#         291
+  C:11C6H         LINE#         292
+  -------         ENDPROC       MC_SMBUS_START
+  -------         PROC          MC_SMBUS_STOP
+  C:11EFH         LINE#         297
+  C:11EFH         LINE#         298
+  C:11EFH         LINE#         299
+  C:11F1H         LINE#         300
+  C:11F3H         LINE#         301
+  C:11F6H         LINE#         302
+  C:11F8H         LINE#         303
+  -------         ENDPROC       MC_SMBUS_STOP
+  -------         PROC          MC_SMBUS_SENDACK
+  B:0020H.0       SYMBOL        ack
+  C:11C7H         LINE#         310
+  C:11C7H         LINE#         311
+  C:11C7H         LINE#         312
+  C:11CBH         LINE#         313
+  C:11CDH         LINE#         314
+  C:11D0H         LINE#         315
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 9
+
+
+  C:11D2H         LINE#         316
+  -------         ENDPROC       MC_SMBUS_SENDACK
+  -------         PROC          MC_SMBUS_RECVACK
+  C:11E2H         LINE#         322
+  C:11E2H         LINE#         323
+  C:11E2H         LINE#         324
+  C:11E4H         LINE#         325
+  C:11E7H         LINE#         326
+  C:11E9H         LINE#         327
+  C:11EBH         LINE#         328
+  C:11EEH         LINE#         330
+  C:11EEH         LINE#         331
+  -------         ENDPROC       MC_SMBUS_RECVACK
+  -------         PROC          L?0053
+  -------         ENDPROC       L?0053
+  -------         PROC          _MC_SMBUS_SENDBYTE
+  D:0007H         SYMBOL        dat
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:10EBH         LINE#         336
+  C:10EBH         LINE#         337
+  C:10EBH         LINE#         340
+  C:10EDH         LINE#         341
+  C:10EDH         LINE#         342
+  C:10F1H         LINE#         343
+  C:10F3H         LINE#         344
+  C:10F5H         LINE#         345
+  C:10F8H         LINE#         346
+  C:10FAH         LINE#         347
+  C:10FDH         LINE#         348
+  C:1102H         LINE#         349
+  -------         ENDPROC       _MC_SMBUS_SENDBYTE
+  -------         PROC          MC_SMBUS_RECVBYTE
+  -------         DO            
+  D:0006H         SYMBOL        i
+  D:0007H         SYMBOL        dat
+  -------         ENDDO         
+  C:1105H         LINE#         355
+  C:1105H         LINE#         356
+  C:1105H         LINE#         358
+  C:1107H         LINE#         360
+  C:1109H         LINE#         361
+  C:110AH         LINE#         362
+  C:110AH         LINE#         363
+  C:110EH         LINE#         364
+  C:1110H         LINE#         365
+  C:1113H         LINE#         366
+  C:1119H         LINE#         367
+  C:111BH         LINE#         368
+  C:111EH         LINE#         369
+  C:1123H         LINE#         370
+  C:1123H         LINE#         371
+  -------         ENDPROC       MC_SMBUS_RECVBYTE
+  -------         PROC          _SINGLE_WRITE_SMBUS
+  D:0007H         SYMBOL        SlaveAddress
+  D:0005H         SYMBOL        REG_Address
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 10
+
+
+  D:0003H         SYMBOL        REG_data
+  C:1207H         LINE#         375
+  C:1207H         LINE#         376
+  C:1207H         LINE#         377
+  C:1207H         LINE#         378
+  C:1207H         LINE#         379
+  C:120AH         LINE#         380
+  C:120FH         LINE#         381
+  -------         ENDPROC       _SINGLE_WRITE_SMBUS
+  -------         PROC          _MULTIPLE_READ_SMBUS
+  D:0004H         SYMBOL        SlaveAddress
+  D:0005H         SYMBOL        REG_Address
+  X:0038H         SYMBOL        buf
+  -------         DO            
+  D:0005H         SYMBOL        i
+  -------         ENDDO         
+  C:0FD7H         LINE#         404
+  C:0FE4H         LINE#         405
+  C:0FE4H         LINE#         407
+  C:0FE4H         LINE#         408
+  C:0FE4H         LINE#         409
+  C:0FE7H         LINE#         410
+  C:0FEAH         LINE#         411
+  C:0FF0H         LINE#         412
+  C:0FF2H         LINE#         413
+  C:0FF2H         LINE#         414
+  C:1009H         LINE#         415
+  C:100DH         LINE#         416
+  C:100DH         LINE#         417
+  C:100FH         LINE#         418
+  C:1011H         LINE#         420
+  C:1011H         LINE#         421
+  C:1016H         LINE#         422
+  C:1016H         LINE#         423
+  C:101BH         LINE#         424
+  C:101EH         LINE#         425
+  -------         ENDPROC       _MULTIPLE_READ_SMBUS
+  -------         PROC          L?0052
+  -------         ENDPROC       L?0052
+  -------         PROC          _FLOAT_TO_ASCII
+  X:0076H         SYMBOL        input
+  X:007AH         SYMBOL        s
+  -------         DO            
+  X:007DH         SYMBOL        p
+  -------         ENDDO         
+  C:0EABH         LINE#         434
+  C:0EBCH         LINE#         435
+  C:0EBCH         LINE#         438
+  C:0ECBH         LINE#         440
+  C:0EDEH         LINE#         442
+  C:0F02H         LINE#         444
+  C:0F26H         LINE#         446
+  C:0F4AH         LINE#         449
+  -------         ENDPROC       _FLOAT_TO_ASCII
+  -------         ENDMOD        MC_INIT_8051
+
+  -------         MODULE        MC_MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 11
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:0B61H         PUBLIC        main
+  X:0080H         PUBLIC        data_write
+  C:0018H         SYMBOL        _?ix1000
+  C:001EH         SYMBOL        _?ix1001
+  C:0024H         SYMBOL        _?ix1002
+  -------         PROC          MAIN
+  -------         DO            
+  X:0000H         SYMBOL        init_ax
+  X:0004H         SYMBOL        init_ay
+  X:0008H         SYMBOL        init_az
+  X:000CH         SYMBOL        init_gx
+  X:0010H         SYMBOL        init_gy
+  X:0014H         SYMBOL        init_gz
+  X:0018H         SYMBOL        init_mx
+  X:001CH         SYMBOL        init_my
+  X:0020H         SYMBOL        init_mz
+  X:0024H         SYMBOL        gyro
+  X:002AH         SYMBOL        accel
+  X:0030H         SYMBOL        mag
+  X:0036H         SYMBOL        i
+  -------         ENDDO         
+  C:0B61H         LINE#         13
+  C:0B61H         LINE#         14
+  C:0B61H         LINE#         16
+  C:0B9AH         LINE#         17
+  C:0BA1H         LINE#         19
+  C:0BA4H         LINE#         20
+  C:0BA7H         LINE#         22
+  C:0BAAH         LINE#         23
+  C:0BADH         LINE#         24
+  C:0BB2H         LINE#         27
+  C:0BB5H         LINE#         30
+  C:0BB8H         LINE#         31
+  C:0BBDH         LINE#         37
+  C:0BBDH         LINE#         38
+  C:0BBDH         LINE#         39
+  C:0BCAH         LINE#         40
+  C:0BD7H         LINE#         41
+  C:0BE4H         LINE#         43
+  C:0BF8H         LINE#         44
+  C:0C0CH         LINE#         45
+  C:0C20H         LINE#         47
+  C:0C32H         LINE#         48
+  C:0C44H         LINE#         49
+  C:0C56H         LINE#         51
+  C:0C68H         LINE#         52
+  C:0C7AH         LINE#         53
+  C:0C8CH         LINE#         56
+  C:0CB3H         LINE#         57
+  C:0CDAH         LINE#         58
+  C:0D01H         LINE#         61
+  C:0D1EH         LINE#         62
+  C:0D3BH         LINE#         63
+  C:0D58H         LINE#         67
+  C:0D6AH         LINE#         68
+  C:0D7CH         LINE#         69
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 12
+
+
+  C:0D8EH         LINE#         73
+  C:0DD3H         LINE#         92
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MC_MAIN
+
+  -------         MODULE        MC_SENSOR
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  C:1023H         PUBLIC        mc_init_ADXL345
+  C:1196H         PUBLIC        mc_init_HMC5883L
+  C:121CH         PUBLIC        mc_init_sensor
+  C:1063H         PUBLIC        mc_init_ITG3205
+  -------         PROC          MC_INIT_SENSOR
+  C:121CH         LINE#         14
+  C:121CH         LINE#         15
+  C:121CH         LINE#         16
+  C:121FH         LINE#         17
+  C:1222H         LINE#         18
+  C:1225H         LINE#         21
+  -------         ENDPROC       MC_INIT_SENSOR
+  -------         PROC          MC_INIT_ADXL345
+  C:1023H         LINE#         29
+  C:1023H         LINE#         30
+  C:1023H         LINE#         41
+  C:102CH         LINE#         42
+  C:1035H         LINE#         43
+  C:103EH         LINE#         44
+  C:1047H         LINE#         45
+  C:1050H         LINE#         46
+  C:1059H         LINE#         47
+  C:1062H         LINE#         50
+  -------         ENDPROC       MC_INIT_ADXL345
+  -------         PROC          MC_INIT_ITG3205
+  C:1063H         LINE#         58
+  C:1063H         LINE#         59
+  C:1063H         LINE#         60
+  C:106CH         LINE#         63
+  C:1075H         LINE#         64
+  C:107EH         LINE#         65
+  C:1087H         LINE#         66
+  C:1090H         LINE#         69
+  -------         ENDPROC       MC_INIT_ITG3205
+  -------         PROC          MC_INIT_HMC5883L
+  C:1196H         LINE#         77
+  C:1196H         LINE#         78
+  C:1196H         LINE#         80
+  C:119FH         LINE#         81
+  C:11A8H         LINE#         84
+  -------         ENDPROC       MC_INIT_HMC5883L
+  -------         ENDMOD        MC_SENSOR
+
+  -------         MODULE        ?C?FPMUL
+  C:0036H         PUBLIC        ?C?FPMUL
+  -------         ENDMOD        ?C?FPMUL
+
+  -------         MODULE        ?C?FPDIV
+  C:013FH         PUBLIC        ?C?FPDIV
+  -------         ENDMOD        ?C?FPDIV
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 13
+
+
+
+  -------         MODULE        ?C?FCAST
+  C:01E6H         PUBLIC        ?C?FCASTC
+  C:01E1H         PUBLIC        ?C?FCASTI
+  C:01DCH         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        PRINTF
+  X:0038H         PUBLIC        ?_PRINTF?BYTE
+  X:0038H         PUBLIC        ?_SPRINTF?BYTE
+  C:0749H         PUBLIC        _PRINTF
+  C:0743H         PUBLIC        _SPRINTF
+  -------         ENDMOD        PRINTF
+
+  -------         MODULE        ?C?FPROUND
+  C:0264H         PUBLIC        ?C?FPROUND
+  -------         ENDMOD        ?C?FPROUND
+
+  -------         MODULE        ?C?FPCONVERT
+  C:02A1H         PUBLIC        ?C?FPCONVERT
+  -------         ENDMOD        ?C?FPCONVERT
+
+  -------         MODULE        ?C?FPADD
+  C:03ADH         PUBLIC        ?C?FPADD
+  C:03A9H         PUBLIC        ?C?FPSUB
+  -------         ENDMOD        ?C?FPADD
+
+  -------         MODULE        ?C?FTNPWR
+  C:04CEH         PUBLIC        ?C?FTNPWR
+  -------         ENDMOD        ?C?FTNPWR
+
+  -------         MODULE        ?C?COPY
+  C:05DEH         PUBLIC        ?C?COPY
+  -------         ENDMOD        ?C?COPY
+
+  -------         MODULE        ?C?CLDPTR
+  C:0604H         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        ?C?CLDOPTR
+  C:061DH         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+  -------         MODULE        ?C?CSTPTR
+  C:064AH         PUBLIC        ?C?CSTPTR
+  -------         ENDMOD        ?C?CSTPTR
+
+  -------         MODULE        ?C?CSTOPTR
+  C:065CH         PUBLIC        ?C?CSTOPTR
+  -------         ENDMOD        ?C?CSTOPTR
+
+  -------         MODULE        ?C?LNEG
+  C:067EH         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+  -------         MODULE        ?C?LSTXDATA
+  C:068CH         PUBLIC        ?C?LSTXDATA
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/14/2014  23:39:58  PAGE 14
+
+
+  -------         ENDMOD        ?C?LSTXDATA
+
+  -------         MODULE        ?C?PLDIXDATA
+  C:0698H         PUBLIC        ?C?PLDIXDATA
+  -------         ENDMOD        ?C?PLDIXDATA
+
+  -------         MODULE        ?C?PSTXDATA
+  C:06AFH         PUBLIC        ?C?PSTXDATA
+  -------         ENDMOD        ?C?PSTXDATA
+
+  -------         MODULE        ?C?CCASE
+  C:06B8H         PUBLIC        ?C?CCASE
+  -------         ENDMOD        ?C?CCASE
+
+  -------         MODULE        PUTCHAR
+  C:10BCH         PUBLIC        _PUTCHAR
+  -------         ENDMOD        PUTCHAR
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?MC_INIT_TIMER3?MC_INIT_8051
+
+Program Size: data=15.1 xdata=158 code=4649
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)
